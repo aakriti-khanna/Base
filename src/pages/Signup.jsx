@@ -9,61 +9,97 @@ import github from "../assets/github.svg";
 import twitter from "../assets/twitter.svg";
 import linkedin from "../assets/linkedin.svg";
 import discord from "../assets/discord.svg";
-import Logo from "../components/Logo";
+import Logo from "../assets/NewLogo.png";
+import ImageUrl from "../assets/Sideright.png";
+import { FaMoon, FaSun } from "react-icons/fa";
 
+const Signup = () => {
+  const [value, setValue] = useState("");
+  const [check, setCheck] = useState(true);
+  const [theme, setTheme] = useState("light");
+  const navigate = useNavigate();
+  const [authenticated, setauthenticated] = useState(
+    localStorage.getItem(localStorage.getItem("authenticated") || false)
+  );
 
-const Signup =() => {
-    const [value, setValue] = useState("");
-    const [check, setCheck] = useState(true);
-    const navigate = useNavigate();
-    const [authenticated, setauthenticated] = useState(
-      localStorage.getItem(localStorage.getItem("authenticated") || false)
-    );
-
-    const handleClick = () => {
-        signInWithPopup(auth, provider)
-          .then((data) => {
-            const profilePic = data.user.photoURL;
-            const email = data.user.email;
-            setValue(data.user.email);
-            localStorage.setItem("email", email);
-            localStorage.setItem("pic", profilePic);
-            localStorage.setItem("authenticated", true);
-            setauthenticated(true);
-            navigate("/home");
-            setCheck(false);
-          })
-          .catch((err) => navigate("/"));
-      };
-      useEffect(() => {
-        const loggedInUser = localStorage.getItem("authenticated");
-        if (loggedInUser) {
-          setauthenticated(true);
-        }
+  const handleClick = () => {
+    signInWithPopup(auth, provider)
+      .then((data) => {
+        const profilePic = data.user.photoURL;
+        const email = data.user.email;
+        setValue(data.user.email);
+        localStorage.setItem("email", email);
+        localStorage.setItem("pic", profilePic);
+        localStorage.setItem("authenticated", true);
+        setauthenticated(true);
+        navigate("/home");
         setCheck(false);
-      }, []);
-    if(authenticated && !check) {
-        return <Navigate replace to="/home" />
-    } else{
+      })
+      .catch((err) => navigate("/"));
+  };
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+  };
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("authenticated");
+    if (loggedInUser) {
+      setauthenticated(true);
+    }
+    setCheck(false);
+  }, []);
+  if (authenticated && !check) {
+    return <Navigate replace to="/home" />;
+  } else {
     return (
-        <div className="flex flex-col sm:flex-row justify-between bg-[#F5F5F5] items-center w-full">
-        <div className="flex h-[60px] sm:h-[80px] sm:min-h-screen w-full sm:w-[75%] bg-[#605BFF] clipped">
-          <Logo></Logo> 
-          {/* <div className=" flex justify-center items-center ml-[15%]">
-            <h1 className=" text-white font-bold text-[2rem] md:text-[3rem] lg:text-[4.5rem] clipped-opposite">
-              BASE
-            </h1>
-          </div> */}
-          <div className="fixed flex justify-center items-center w-full h-fit bottom-0 clipped-opposite mb-12">
-            <div className="flex gap-x-6">
-              <img alt="github"src={github} className="w-[34px] h-[34px]" />
-              <img alt="twitter" src={twitter} className="w-[34px] h-[34px]" />
-              <img alt="linkedin" src={linkedin} className="w-[34px] h-[34px]" />
-              <img alt="discord" src={discord} className="w-[34px] h-[34px]" />
-            </div>
+      <div
+        className={`flex flex-col sm:flex-row justify-evenly items-center w-full h-screen ${
+          theme === "light" ? "bg-[#F5F5F5]" : "bg-[#1E1E1E]"
+        }`}
+      >
+        <div className="relative flex h-screen mx-5 ">
+          <div className="ml-10 mt-20 absolute h-4">
+            <img src={Logo}></img>
+          </div>
+          <div
+            className={`text-${
+              theme === "light" ? "black" : "white"
+            } font-bold ml-40 text-2xl absolute top-20 px-4`}
+          ></div>
+          <img
+            src={ImageUrl}
+            alt="Main visual"
+            className=" max-h-screen object-cover rounded-4xl mt-5 mb-5"
+          />
+
+          <div className="absolute bottom-14 mb-6 ml-4 left-4 flex items-center">
+            <label className="relative inline-flex items-center cursor-pointer ml-4">
+              <input
+                type="checkbox"
+                className="sr-only"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <div className="w-14 h-8 bg-gray-300 rounded-full flex items-center px-1 transition-colors duration-300">
+                <div
+                  className={`${
+                    theme === "light" ? "translate-x-0" : "translate-x-6"
+                  } w-6 h-6 bg-white rounded-full flex items-center justify-center transition-transform duration-300`}
+                >
+                  {theme === "light" ? (
+                    <FaMoon className="text-gray-800" size={20} />
+                  ) : (
+                    <FaSun className="text-gray-500" size={20} />
+                  )}
+                </div>
+              </div>
+            </label>
           </div>
         </div>
-        <div className="flex flex-col mt-14 w-full gap-6 justify-center items-center">
+
+        <div className="flex flex-col  gap-6 justify-center items-center">
           <div className="flex flex-col justify-center gap-4">
             <div className="flex flex-col justify-between items-start px-6 gap-2">
               <h2 className="text-[18px] sm:text-[36px] text-black font-bold sm:leading-[43.88px]">
@@ -132,7 +168,7 @@ const Signup =() => {
         </div>
       </div>
     );
-    }
+  }
 };
 
 export default Signup;
